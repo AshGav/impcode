@@ -1,0 +1,237 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM9ZxaQvIQL5A3iVMtWhn54",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/AshishGit22/impcode/blob/main/website_summarizer_Gemini\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UWBdJs6F0tNR",
+        "outputId": "052fde67-b854-4d39-8756-b95b4a254d40"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m53.3/53.3 kB\u001b[0m \u001b[31m1.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m426.6/426.6 kB\u001b[0m \u001b[31m7.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m107.7/107.7 kB\u001b[0m \u001b[31m3.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m64.7/64.7 kB\u001b[0m \u001b[31m2.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m233.3/233.3 kB\u001b[0m \u001b[31m11.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n",
+            "google-colab 1.0.0 requires google-auth==2.43.0, but you have google-auth 2.45.0 which is incompatible.\n",
+            "google-colab 1.0.0 requires requests==2.32.4, but you have requests 2.32.5 which is incompatible.\u001b[0m\u001b[31m\n",
+            "\u001b[0mLibraries installed and imported successfully!\n"
+          ]
+        }
+      ],
+      "source": [
+        "# 1. Install necessary packages\n",
+        "!pip install -q -U google-genai beautifulsoup4 requests\n",
+        "\n",
+        "# 2. Import the tools into our script\n",
+        "import requests\n",
+        "from bs4 import BeautifulSoup\n",
+        "from google import genai\n",
+        "from google.colab import userdata\n",
+        "\n",
+        "print(\"Libraries installed and imported successfully!\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def get_website_content(url):\n",
+        "    # Fetch the webpage\n",
+        "    response = requests.get(url)\n",
+        "\n",
+        "    # Parse the HTML code\n",
+        "    soup = BeautifulSoup(response.text, 'html.parser')\n",
+        "\n",
+        "    # Remove technical noise (code and styling)\n",
+        "    for tech_stuff in soup([\"script\", \"style\", \"nav\", \"footer\"]):\n",
+        "        tech_stuff.decompose()\n",
+        "\n",
+        "    # Get the plain text and remove extra empty spaces\n",
+        "    clean_text = \" \".join(soup.get_text().split())\n",
+        "\n",
+        "    print(f\"Successfully extracted {len(clean_text)} characters of text.\")\n",
+        "    return clean_text\n",
+        "\n",
+        "# Test it with a URL\n",
+        "test_url = \"https://www.bollywoodhungama.com/movie/avatar-fire-ash-english/critic-review/avatar-fire-ash-english-movie-review/avatar-fire-and-ash-is-a-visually-stunning-big-screen-spectacle/\"\n",
+        "web_text = get_website_content(test_url)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "SOexaLmx01UM",
+        "outputId": "fb29a066-d5b7-4b2a-f108-a0e14f374f31"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Successfully extracted 17479 characters of text.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "web_text"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 140
+        },
+        "id": "JBlq1yi_2npZ",
+        "outputId": "1e617e81-149b-4782-9aa8-33176c9a9339"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "\"Avatar: Fire and Ash (English) Movie Review: AVATAR: FIRE AND ASH is a visually stunning big-screen spectacle Skip to contentBollywood Entertainment at its best SEARCHLANGUAGEFOLLOW US ON FEEDBACK X Bollywood Entertainment at its best feedback language follow us on Bollywood Hungama » Movies » Movie Reviews » Avatar: Fire and Ash (English) Movie Review: AVATAR: FIRE AND ASH is a visually stunning big-screen spectacle Rate it Add to FavoritesAvatar: Fire and Ash (English) Release date: 19 December, 2025 4/5 1 User Ratings Critic Movie Review User Movie Reviews 1967483 Avatar: Fire and Ash (English) Movie Review: AVATAR FIRE AND ASH is a visually stunning bigscreen spectacle. Review by Bollywood Hungama News Network Published: December 18, 2025 11:33 IST Updated: December 18, 2025 11:33 IST 3.5 Avatar: Fire and Ash (English) Movie Rating AVATAR: FIRE AND ASH is a visually stunning, emotionally stirring big-screen spectacle Rating : 3.5 December 18, 2025 Avatar: Fire and Ash (English) https://www.bollywoodhungama.com/movie/avatar-fire-ash-english/critic-review/ https://www.bollywoodhungama.com/movie/avatar-fire-ash-english/critic-review/avatar-fire-ash-english-movie-review/avatar-fire-and-ash-is-a-visually-stunning-big-screen-spectacle/ AVATAR: FIRE AND ASH is a visually stunning big-screen spectacle https://media5.bollywoodhungama.in/wp-content/uploads/2025/04/Avatar-Fire-and-Ash-1-240x300.jpeg 240 300 Zoe Saldana https://www.bollywoodhungama.com/celebrity/zoe-saldana/ Sam Worthington https://www.bollywoodhungama.com/celebrity/sam-worthington/ https://www.bollywoodhungama.com/movie/avatar-fire-ash-english/critic-review/avatar-fire-ash-english-movie-review/avatar-fire-and-ash-is-a-visually-stunning-big-screen-spectacle/ December 18, 2025 AVATAR: FIRE AND ASH is a visually stunning big-screen spectacle en Bollywood Hungama News Network https://www.bollywoodhungama.com/author/bollywood-hungama-news-network/ Bollywood Hungama https://www.bollywoodhungama.com/ https://www.bollywoodhungama.com/wp-content/themes/bh-theme/images/logo.png 210 58 0.5 5 3.5 Avatar: Fire and Ash (English) Review {3.5/5} & Review RatingStar Cast: Sam Worthington, Zoe Saldaña, Stephen Lang, Oona ChaplinDirector: James CameronAvatar: Fire And Ash Movie Review Synopsis: AVATAR: FIRE AND ASH is the story of a family in distress. After the events of the AVATAR: THE WAY OF WATER [2022], Jake Sully (Sam Worthington) and Neytiri (Zoe Saldaña) and their children, Kiri (Sigourney Weaver), Lo'ak (Britain Dalton) and daughter Tuktirey aka Tuk (Trinity Jo-Li Bliss) are mourning the loss of the couple's elder son Neteyam (Jamie Flatters). Miles Socorro aka Spider (Jake Champion) has reunited with the Sullys and is now residing with them, along with the members of the Metkayina tribe. Colonel Miles Quaritch (Stephen Lang) gets back to the base after his defeat last time and once again begins to prepare for the attack on Jake and his family. Spider is running out of oxygen masks and Jake and Neytiri fear he can become a burden on them. The Wind Traders arrive at the Metkayina village; Jake and Neytiri decide to send Spider with the traders so that he can reunite with the human community. Their children protest. Hence, Jake and Neytiri decide to join the Wind Traders, along with the kids, in sending off Spider. On the way, they are attacked by the violent members of the Mangkwan clan, headed by the ruthless Varang (Oona Chaplin). While the Sullys are trying to fight them off, Miles gets the intel of the presence of the Sullys in the forest and he also arrives at the site to finish them off. Meanwhile, Spider runs out of oxygen and is struggling to breathe and survive. What happens next forms the rest of the film.Avatar: Fire And Ash Movie Story Review: James Cameron, Rick Jaffa, Amanda Silver, Josh Friedman and Shane Salerno's story is simple and emotional. James Cameron, Rick Jaffa and Amanda Silver's screenplay is peppered with lots of emotional and dramatic moments that keep the interest going. But this time, the writing also falls short in some places. The dialogues are conversational. A few words are self-censored and muted by the makers.James Cameron's direction is splendid. Yet again, he strikes a balance – he depicts the visual grandeur in all its glory, but at the same time, he makes sure that the viewers are invested in the principal characters, moved by their plight and rejoice during their victories. This time, the tension begins very soon after which James goes back to his original style of building up and setting up the premise for an impactful second half. This portion is worth it as new bonds are formed, especially revolving around Miles. The scene where Spider is resurrected is awe-inspiring. The second half is where the action goes to another level. A few scenes will lead to claps and whistles.On the flipside, AVATAR: FIRE AND ASH looks similar to AVATAR: THE WAY OF WATER, especially in the landscape depicted and also the happenings of the second half. What made the second part stand out is that the fight and the setting were very different from AVATAR [2009]. This same factor is not present here. Hence, viewers get a been-there-done-that feeling. Moreover, AVATAR: THE WAY OF WATER had a charm as it arrived 13 years after its predecessor. AVATAR: FIRE AND ASH releases three years after the second part and this time, things look a bit repetitive. In fact, it won’t be wrong to say that some sort of fatigue factor has also set in. Lastly, a crucial character gets a raw deal, especially towards the end.Avatar: Fire And Ash Movie Review Performances: Sam Worthington, as always, delivers an understated yet bravura performance. Zoe Saldaña, however, is the scene-stealer. She gets her vulnerable act right, but watch out for her when she activates her angry-and-action mode. She is the most mass-appealing character and her scenes will be lapped up the most. Stephen Lang is suave and worthy. Oona Chaplin is a great addition to the madness and does well. Sigourney Weaver, this time, has a lot more to do and is impressive. Jack Champion is adorable. His character is at the centre stage this time and he faces a lot of challenges and yet, the way he doesn't let his goodness go will be quite appreciated. Britain Dalton is fine, though he gets a limited scope. Kate Winslet (Ronal) leaves a mark in a small role. Others like Trinity Bliss, Cliff Curtis (Tonowari), Bailey Bass (Tsireya), Edie Falco (General Frances Ardmore) and Brendan Cowell (Captain Mick Scoresby) lend able support. Jemaine Clement (Dr Ian Garvin) is a surprise this time.Avatar: Fire And Ash movie music and other technical aspects: Simon Franglen's music has the traditional AVATAR stamp all over. Russell Carpenter's cinematography is awe-inspiring. Dylan Cole and Ben Procter's production design is out of the world while Deborah L Scott's costumes are one of a kind as per the requirement. As for VFX, words will fall short to describe its brilliance. Stephen Rivkin, David Brenner, John Refoua and James Cameron's editing is unhurried but a bit dragging in a few scenes.Avatar: Fire And Ash Movie Review Conclusion: On the whole, AVATAR: FIRE AND ASH is a visually stunning, emotionally stirring big-screen spectacle. At the same time, the film does lose a bit of its novelty because certain set-pieces and landscapes feel too close to AVATAR: THE WAY OF WATER, and the fatigue factor is hard to ignore after a three-year gap. In India, it will also have to swim against the strong DHURANDHAR wave, which is dominating screens and audience conversation. Yet, AVATAR’s biggest advantage is that this isn’t the kind of film viewers would want to wait and watch at home; the scale, VFX, and immersive action demand a theatrical outing. Hence, despite the hurdles, it will find its share of audience and is well-placed to emerge as the biggest Hollywood hit of the year. Avatar: Fire and Ash (English) ReviewAvatar: Fire and Ash (English) RatingAvatar: Fire and Ash (English) Movie ReviewsAvatar: Fire and Ash (English) Public ReviewAvatar: Fire and Ash (English) Movie Release DateMore Avatar: Fire and Ash (English) ReviewAvatar: Fire and Ash (English) RatingAvatar: Fire and Ash (English) Movie ReviewsAvatar: Fire and Ash (English) Public ReviewAvatar: Fire and Ash (English) Movie Release DateAvatar: Fire and Ash (English) Film Release DateAvatar: Fire and Ash (English) Critic ReviewAvatar: Fire and Ash (English) Movie ReviewAvatar: Fire and Ash (English) ReviewsAvatar: Fire and Ash (English) Film ReviewsAvatar: Fire and Ash (English) Film ReviewAvatar: Fire and Ash (English) Hindi Movie ReviewAvatar: Fire and Ash (English) Hindi Movie ReviewsLess Avatar: Fire and Ash (English) Movie News Namit Malhotra appreciates the 3D Promo of Ramayana; calls it “electrifying” Published on Dec 24, 2025 05:18 PM IST Avatar: Fire And Ash shows to be CUT by 30% on Christmas Day for Kartik Aaryan’s Tu Meri Main Tera; exhibitors pick Kartik as their first choice Updated on Dec 22, 2025 10:57 AM IST Avatar: Fire And Ash attempts to brave the Dhurandhar wave in India; jumps by 20 percent on Saturday to collect Rs. 23 cr. Updated on Dec 22, 2025 10:51 AM IST BREAKING: PVR INOX launches the HIGHEST multiplex in Leh at 11,500 feet; Dhurandhar, Avatar: Fire And Ash lead the opening lineup Published on Dec 20, 2025 03:44 PM IST Box Office Earthquake: Dhurandhar breaks the laws of trending on 3rd Friday, unshaken by Avatar 3; collects Rs 23 crores on Day 15 Updated on Dec 20, 2025 01:35 AM IST Box Office: Avatar: Fire and Ash takes an average start in India; collects Rs. 19 crores on Day 1 Updated on Dec 20, 2025 01:35 AM IST Facebook Comments Movies This Month Bollywood Movie Review The Housemaid (English) Movie Review Anaconda (English) Movie Review Tu Meri Main Tera Main Tera Tu Meri Movie Review Raat Akeli Hai: The Bansal Murders Movie Review Avatar: Fire and Ash (English) Movie Review Wake Up Dead Man: A Knives Out Mystery (English) Movie Review Saali Mohabbat Movie Review The Great Shamsuddin Family Movie Review Christmas Karma (English) Movie Review Kis Kisko Pyaar Karoon 2 Movie Review Entertainment directoryMoviesCelebrities 1105A 932B 504C 834D 222E 192F 472G 560H 239I 534J 876K 385L 1200M 436N 88O 802P 38Q 598R 1426S 836T 102U 167V 149W 6X 159Y 140Z 127# 7281A 2290B 1335C 2856D 451E 471F 1650G 1400H 627I 2510J 3143K 878L 4663M 2607N 211O 3465P 43Q 5200R 9803S 1406T 464U 2466V 194W 13X 489Y 288Z 5# New Bollywood Movies 45 MovieThe Housemaid (English) MovieIkkis MovieThe SpongeBob Movie: Search for Squarepants (English) MovieAzad Bharath MovieThe Raja Saab MovieBihu Attack Movie28 Years Later: The Bone Temple (English) MovieRahu Ketu MovieMayasabha Movie Bollywood Movie Reviews The Housemaid (English) Review Anaconda (English) Review Tu Meri Main Tera Main Tera Tu Meri Review Raat Akeli Hai: The Bansal Murders Review Avatar: Fire and Ash (English) Review Wake Up Dead Man: A Knives Out Mystery (English) Review Saali Mohabbat Review The Great Shamsuddin Family Review Christmas Karma (English) Review Kis Kisko Pyaar Karoon 2 Review Public Movie Reviews De De Pyaar De 2 Public Review Jolly LLB 3 Public Review Baaghi 4 Public Review Param Sundari Public Review War 2 Public Review Dhadak 2 Public Review Son Of Sardaar 2 Public Review Saiyaara Public Review Metro… In Dino Public Review Sitaare Zameen Par Public Review Box Office Collection Vrusshabha Box Office Tu Meri Main Tera Main Tera Tu Meri Box Office Anaconda (English) Box Office Avatar: Fire and Ash (English) Box Office Durlabh Prasad Ki Dusri Shaadi Box Office Akhanda 2: Thaandavam Box Office Safar Mein Sheher Box Office Kis Kisko Pyaar Karoon 2 Box Office Christmas Karma (English) Box Office Five Nights at Freddy’s 2 (English) Box Office Top Celebs Akshay KumarKatrina KaifRanveer SinghDeepika PadukoneAllu ArjunVaani KapoorSalman KhanRashmika MandannaJohn AbrahamAyushmann KhurranaTara SutariaRajkummar Rao Bollywood Box Office Box Office Collection Analysis & Features All Time Top Grossers Overseas Box Office 100 Crore club 200 Crore club Top Actors Top Actress Box Office Collection 2023 Box Office Collection 2022 Box Office Collection 2021 Box Office Collection 2020 Latest Bollywood News Bollywood News Featured Movie News Latest Box Office News Box Office Updates Box Office Business Talk Box Office Overseas News Latest News Slideshows Upcoming Releases Movie Reviews Bollywood Hindi News Top Bollywood Photos Parties and Events Latest Celeb Photos Celeb Wallpapers Movie Stills First Look Movie Wallpapers Toons New Latest Videos Top Movie Video Songs Celebrity Interview Videos Movie Trailer Videos Party & Event Videos Exclusives & Specials Bollywood Movie Trailer The Raja Saab Trailer 2.0 (Hindi) | Prabhas |…Azad Bharath Official Trailer | Shreyas Talpade |…Battle Of Galwan - Teaser | Salman Khan,…Chiranjeevi Hanuman – The Eternal | Official…Raje Yuvaraje Promo (Hindi) - The RajaSaab |…Akshay Kumar shares Welcome To The Jungle wrap up… Useful links Latest Hindi News Latest Bhojpuri News Celebs@twitter Hungama.com Artist Aloud Hungama Games Sitemap Movie Reviews Music Reviews Bharat Official Trailer Downloads Photos Download Celeb Photos Download Celeb Wallpapers Download Movie photos Download Celebrity Party Photos Download Movie First Look Poster Download Magazine Cover Download Movie On Set Photos Download Movie Wallpapers Home | Advertise | Privacy Policy | Feedback | Contact Us | Grievance Officer | FAQDownload App on Copyright © 2025 Hungama Digital Media Entertainment Pvt. Ltd. All Rights Reserved. Log InSign UpLog In with your social account Connect with: ORLog In with your Bollywood Hungama details By creating an account you agree to abide by the Bollywood Hungama Terms of use CountryAfghanistanAlbaniaAlgeriaAmerican SamoaAndorraAngolaAnguillaAntarcticaAntigua and BarbudaArgentinaArmeniaArubaAustraliaAustriaAzerbaijanBahamasBahrainBangladeshBarbadosBelarusBelgiumBelizeBeninBermudaBhutanBoliviaBosnia and HerzegovinaBotswanaBouvet IslandBrazilBritish Antarctic TerritoryBritish Indian Ocean TerritoryBritish Virgin IslandsBruneiBulgariaBurkina FasoBurundiCambodiaCameroonCanadaCanton and Enderbury IslandsCape VerdeCayman IslandsCentral African RepublicChadChileChinaChristmas IslandCocos [Keeling] IslandsColombiaComorosCongo - BrazzavilleCongo - KinshasaCook IslandsCosta RicaCroatiaCubaCyprusCzech RepublicCôte d'IvoireDenmarkDjiboutiDominicaDominican RepublicDronning Maud LandEast GermanyEcuadorEgyptEl SalvadorEquatorial GuineaEritreaEstoniaEthiopiaFalkland IslandsFaroe IslandsFijiFinlandFranceFrench GuianaFrench PolynesiaFrench Southern TerritoriesFrench Southern and Antarctic TerritoriesGabonGambiaGeorgiaGermanyGhanaGibraltarGreeceGreenlandGrenadaGuadeloupeGuamGuatemalaGuernseyGuineaGuinea-BissauGuyanaHaitiHeard Island and McDonald IslandsHondurasHong Kong SAR ChinaHungaryIcelandIndiaIndonesiaIranIraqIrelandIsle of ManIsraelItalyJamaicaJapanJerseyJohnston IslandJordanKazakhstanKenyaKiribatiKuwaitKyrgyzstanLaosLatviaLebanonLesothoLiberiaLibyaLiechtensteinLithuaniaLuxembourgMacau SAR ChinaMacedoniaMadagascarMalawiMalaysiaMaldivesMaliMaltaMarshall IslandsMartiniqueMauritaniaMauritiusMayotteMetropolitan FranceMexicoMicronesiaMidway IslandsMoldovaMonacoMongoliaMontenegroMontserratMoroccoMozambiqueMyanmar [Burma]NamibiaNauruNepalNetherlandsNetherlands AntillesNeutral ZoneNew CaledoniaNew ZealandNicaraguaNigerNigeriaNiueNorfolk IslandNorth KoreaNorth VietnamNorthern Mariana IslandsNorwayOmanPacific Islands Trust TerritoryPakistanPalauPalestinian TerritoriesPanamaPanama Canal ZonePapua New GuineaParaguayPeople's Democratic Republic of YemenPeruPhilippinesPitcairn IslandsPolandPortugalPuerto RicoQatarRomaniaRussiaRwandaRéunionSaint BarthélemySaint HelenaSaint Kitts and NevisSaint LuciaSaint MartinSaint Pierre and MiquelonSaint Vincent and the GrenadinesSamoaSan MarinoSaudi ArabiaSenegalSerbiaSerbia and MontenegroSeychellesSierra LeoneSingaporeSlovakiaSloveniaSolomon IslandsSomaliaSouth AfricaSouth Georgia and the South Sandwich IslandsSouth KoreaSpainSri LankaSudanSurinameSvalbard and Jan MayenSwazilandSwedenSwitzerlandSyriaSão Tomé and PríncipeTaiwanTajikistanTanzaniaThailandTimor-LesteTogoTokelauTongaTrinidad and TobagoTunisiaTurkeyTurkmenistanTurks and Caicos IslandsTuvaluU.S. Minor Outlying IslandsU.S. Miscellaneous Pacific IslandsU.S. Virgin IslandsUgandaUkraineUnion of Soviet Socialist RepublicsUnited Arab EmiratesUnited KingdomUnited StatesUnknown or Invalid RegionUruguayUzbekistanVanuatuVatican CityVenezuelaVietnamWake IslandWallis and FutunaWestern SaharaYemenZambiaZimbabweÅland Islands Date of Birth MonthJanuaryFebuaryMarchAprilMayJuneJulyAugustSeptemberOctoberNovemberDecember Date12345678910111213141516171819202122232425262728293031 Year2025202420232022202120202019201820172016201520142013201220112010200920082007200620052004200320022001200019991998199719961995199419931992199119901989198819871986198519841983198219811980197919781977197619751974197319721971197019691968196719661965196419631962196119601959195819571956195519541953195219511950194919481947194619451944194319421941194019391938193719361935193419331932193119301929192819271926192519241923192219211920191919181917191619151914Gender Male Female Skip this step for nowForgot Password Please provide your registered email address or username OR Write A Review Your Rating Click to rate on scale of 1-5 Review Title Your Review5000 characters remaining New notification\""
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 9
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Initialize the Gemini Client using your secret API Key\n",
+        "API_KEY = userdata.get('GOOGLE_API_KEY')\n",
+        "client = genai.Client(api_key=API_KEY)\n",
+        "\n",
+        "def summarize_text(text_to_summarize):\n",
+        "    # This is the \"Instruction\" we give to the Gen AI\n",
+        "    instruction = f\"\"\"\n",
+        "    You are a professional web analyst. Summarize the following website text.\n",
+        "    Please provide:\n",
+        "    1. What the website is about ?\n",
+        "    2. 2 interesting things\n",
+        "\n",
+        "    TEXT:\n",
+        "    {text_to_summarize}\n",
+        "    \"\"\"\n",
+        "\n",
+        "    # Call the Gemini 2.5 Flash model\n",
+        "    response = client.models.generate_content(\n",
+        "        model=\"gemini-2.5-flash\",\n",
+        "        contents=instruction\n",
+        "    )\n",
+        "\n",
+        "    return response.text\n",
+        "\n",
+        "print(\"AI Summarizer function is ready!\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "QG5pitW22pWx",
+        "outputId": "6772016c-d146-44bb-a5a2-b66baea7ef0c"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "AI Summarizer function is ready!\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "summarize_text(web_text)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 192
+        },
+        "id": "juB8rzY-4Kcn",
+        "outputId": "b6810e94-cda5-459b-b104-965a376b778d"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'Here\\'s a summary of the provided website text:\\n\\n---\\n\\n**1. What the website is about?**\\n\\nThe website, \"Bollywood Hungama,\" is a comprehensive Indian entertainment portal primarily focused on Bollywood movies. It provides in-depth movie reviews (including for major Hollywood releases like \"Avatar: Fire and Ash\"), movie news, box office analysis, celebrity information, photos, videos, and other related content for a broad audience interested in cinema, particularly from an Indian perspective.\\n\\n**2. 2 interesting things:**\\n\\n1.  **Mixed Critical Reception for *Avatar: Fire and Ash*:** The review praises the movie as a \"visually stunning, emotionally stirring big-screen spectacle\" with \"splendid\" direction by James Cameron and standout performances. However, it significantly criticizes the film for lacking novelty, feeling \"repetitive\" compared to *Avatar: The Way of Water*, and contributing to a \"fatigue factor\" due to the relatively short three-year gap between installments.\\n2.  **Localized Indian Box Office Perspective:** The website actively analyzes the performance of *Avatar: Fire and Ash* within the Indian market. It highlights the film\\'s challenge to \"swim against the strong DHURANDHAR wave\" (a local Indian blockbuster) and mentions instances like its screen shows being cut by 30% on Christmas Day in favor of \"Kartik Aaryan’s Tu Meri Main Tera,\" underscoring the fierce competition from popular local films.'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 14
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "1n1i9hc15f4Z"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "uiItOAQz-JLK"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
